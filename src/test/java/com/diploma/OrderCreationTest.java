@@ -1,40 +1,29 @@
 package com.diploma;
 
-import com.diploma.model.*;
+import com.diploma.model.CreateOrderRequest;
+import com.diploma.model.CreateOrderResponse;
+import com.diploma.model.Ingredient;
+import com.diploma.model.Order;
 import io.qameta.allure.junit4.DisplayName;
-import io.restassured.RestAssured;
 import io.restassured.response.Response;
-import org.junit.Before;
 import org.junit.Test;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
-import java.util.UUID;
 
 import static com.diploma.TestUtils.*;
 import static java.util.stream.Collectors.toList;
 import static org.apache.http.HttpStatus.*;
 import static org.junit.Assert.*;
 
-public class OrderCreationTest {
+public class OrderCreationTest extends BaseTest {
 
     public static final String ORDER_PATH = "/orders";
     public static final String INGREDIENTS_PATH = "/ingredients";
 
-    @Before
-    public void setUp() {
-        RestAssured.baseURI = PRACTICUM;
-    }
-
     @Test
     @DisplayName("Check that order is created when ingredients are passed")
     public void shouldCreateOrderWhenIngredientsArePassed() {
-        String email = UUID.randomUUID() + "-test-data@yandex.ru";
-        String password = "password";
-        CreateUserResponse createUserResponse = UserCreationTest.createUserSuccessfully(email, password);
-
-        createOrder(createUserResponse.getAccessToken());
+        createOrder(accessToken);
     }
 
     public static Order createOrder(String accessToken) {
@@ -114,19 +103,5 @@ public class OrderCreationTest {
         assertNull(createOrderResponse.getName());
         assertFalse(createOrderResponse.getSuccess());
         assertNull(createOrderResponse.getOrder());
-    }
-
-    private static List<Ingredient> getRandomIngredients(int amount) {
-        IngredientsResponse ingredientsResponse = get(INGREDIENTS_PATH).as(IngredientsResponse.class);
-        Random random = new Random();
-        List<Ingredient> ingredients = ingredientsResponse.getData();
-        int size = ingredients.size();
-        List<Ingredient> requestedIngredients = new ArrayList<>();
-
-        for (int i = 0; i < amount; i++) {
-            requestedIngredients.add(ingredients.get(random.nextInt(size)));
-        }
-
-        return requestedIngredients;
     }
 }

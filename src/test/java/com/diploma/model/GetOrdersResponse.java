@@ -1,7 +1,12 @@
 package com.diploma.model;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import java.util.List;
 
+@Getter
+@Setter
 public class GetOrdersResponse extends BaseResponse {
 
     private Integer total;
@@ -12,30 +17,6 @@ public class GetOrdersResponse extends BaseResponse {
         super(success, message);
         this.total = total;
         this.totalToday = totalToday;
-        this.orders = orders;
-    }
-
-    public Integer getTotal() {
-        return total;
-    }
-
-    public void setTotal(Integer total) {
-        this.total = total;
-    }
-
-    public Integer getTotalToday() {
-        return totalToday;
-    }
-
-    public void setTotalToday(Integer totalToday) {
-        this.totalToday = totalToday;
-    }
-
-    public List<Order> getOrders() {
-        return orders;
-    }
-
-    public void setOrders(List<Order> orders) {
         this.orders = orders;
     }
 }

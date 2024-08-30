@@ -1,44 +1,30 @@
 package com.diploma;
 
-import com.diploma.model.CreateUserResponse;
 import com.diploma.model.GetOrdersResponse;
 import com.diploma.model.Order;
 import io.qameta.allure.junit4.DisplayName;
-import io.restassured.RestAssured;
 import io.restassured.response.Response;
-import org.apache.http.HttpStatus;
-import org.junit.Before;
 import org.junit.Test;
-
-import java.util.UUID;
 
 import static com.diploma.LoginTest.logout;
 import static com.diploma.OrderCreationTest.createOrder;
-import static com.diploma.TestUtils.*;
+import static com.diploma.TestUtils.get;
+import static com.diploma.TestUtils.getWithAuth;
 import static org.apache.http.HttpStatus.SC_OK;
 import static org.apache.http.HttpStatus.SC_UNAUTHORIZED;
 import static org.junit.Assert.*;
 
-public class GetOrderTest {
+public class GetOrderTest extends BaseTest {
 
     public static final String ORDER_PATH = "/orders";
     private static final String NOT_AUTHORISED_MESSAGE = "You should be authorised";
 
-    @Before
-    public void setUp() {
-        RestAssured.baseURI = PRACTICUM;
-    }
-
     @Test
     @DisplayName("Checks that orders are returned when user is authorised")
     public void shouldReturnOrdersWhenUserIsAuthorised() {
-        String email = UUID.randomUUID() + "-test-data@yandex.ru";
-        String password = "password";
-        CreateUserResponse createUserResponse = UserCreationTest.createUserSuccessfully(email, password);
+        Order order = createOrder(accessToken);
 
-        Order order = createOrder(createUserResponse.getAccessToken());
-
-        Response response = getWithAuth(ORDER_PATH, createUserResponse.getAccessToken());
+        Response response = getWithAuth(ORDER_PATH, accessToken);
         response.then().statusCode(SC_OK);
         GetOrdersResponse getOrdersResponse = response.as(GetOrdersResponse.class);
 
@@ -62,14 +48,11 @@ public class GetOrderTest {
     @Test
     @DisplayName("Checks that orders won't be returned when user is logged out")
     public void shouldReturnErrorWhenUserIsLoggedOut() {
-        String email = UUID.randomUUID() + "-test-data@yandex.ru";
-        String password = "password";
-        CreateUserResponse createUserResponse = UserCreationTest.createUserSuccessfully(email, password);
-        Order order = createOrder(createUserResponse.getAccessToken());
+        Order order = createOrder(accessToken);
 
-        logout(createUserResponse.getRefreshToken());
+        logout(refreshToken);
 
-        Response response = getWithAuth(ORDER_PATH, createUserResponse.getAccessToken());
+        Response response = getWithAuth(ORDER_PATH, accessToken);
         GetOrdersResponse getOrdersResponse = response.as(GetOrdersResponse.class);
         response.then().statusCode(SC_UNAUTHORIZED);
 

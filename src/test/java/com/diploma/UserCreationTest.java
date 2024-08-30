@@ -4,36 +4,30 @@ import com.diploma.model.CreateUserRequest;
 import com.diploma.model.CreateUserResponse;
 import com.diploma.model.User;
 import io.qameta.allure.junit4.DisplayName;
-import io.restassured.RestAssured;
 import io.restassured.response.Response;
-import org.junit.Before;
 import org.junit.Test;
 
 import java.util.UUID;
 
-import static com.diploma.TestUtils.PRACTICUM;
+import static com.diploma.TestUtils.deleteUser;
 import static com.diploma.TestUtils.post;
 import static org.apache.http.HttpStatus.SC_FORBIDDEN;
 import static org.apache.http.HttpStatus.SC_OK;
 import static org.junit.Assert.*;
 
-public class UserCreationTest {
+public class UserCreationTest extends BaseTest {
 
     public static final String USER_CREATION_PATH = "/auth/register";
     private static final String EXPECTED_VALIDATION_MESSAGE = "Email, password and name are required fields";
     private static final String EXPECTED_ALREADY_EXISTS_MESSAGE = "User already exists";
-
-    @Before
-    public void setUp() {
-        RestAssured.baseURI = PRACTICUM;
-    }
 
     @Test
     @DisplayName("Check that user creation returns expected response and code")
     public void shouldCreateUserSuccessfullyWhenCorrectRequestIsPassed() {
         String expectedEmail = UUID.randomUUID() + "-test-data@yandex.ru";
         String password = "password";
-        createUserSuccessfully(expectedEmail, password);
+        CreateUserResponse createUserResponse = createUserSuccessfully(expectedEmail, password);
+        deleteUser(createUserResponse.getAccessToken());
     }
 
     @Test
